@@ -1,0 +1,2 @@
+# pyshell
+weird python shell
