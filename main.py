@@ -1,23 +1,30 @@
 # PyOS Libraries
-from commands import *
 from installer import *
 from file import *
 # Other
 import hashlib
-
+instm = -1
 version = [
-    [0,0,1], # Internal Version
-    "0.0.1", # Shown Version
+    [1,0,2], # Internal Version
+    "", # IV String
+    "Build 2", # Shown Version
     True # Beta Tag
 ]
+version[1] = str(version[0])
+for x_ in range(1, len(version[0])):
+    version[1] += f".{str(x_)}"
 
-def parse(command):
+def parse(commandi):
     out = []
     tmp = ""
     i = 0
-    for x in command:
-        if x == " " or i == len(command)-1:
+    if commandi == "":
+        return [""]
+    for x in commandi:
+        if x == " " or i >= len(commandi)-1:
+            tmp += x
             out.append(tmp)
+            tmp = ""
         else:
             tmp += x
         i += 1
@@ -25,16 +32,37 @@ def parse(command):
 
 def run_command(command):
     parsedcmd = parse(command)
-    if instm == -1:
-        if parsedcmd[0] == "install":
-            install()
+    instm = int(fread("INSM.OS", "-1"))
+    if instm == -1 and parsedcmd[0] == "install":
+        install()
+        instm = 1
+    elif parsedcmd[0] == "exit":
+        exit()
+    elif instm > -1 and parsedcmd[0] == "help":
+        if instm == 0:
+            print("help\nver\nexit")
+        else:
+            print("help\nver\nexit")
+    elif instm > -1 and parsedcmd[0] == "ver":
+        if instm == 0:
+            print(f"PyShell {version[2]} ({version[1]})\nUsername: {fread("USER.OS")}\nFailed to verify.")
+        else:
+            print(f"PyShell {version[2]} ({version[1]})\nUsername: {fread("USER.OS")}\nVerification String: {fread("INST.OS")}")
     else:
-        print(f"Command {parsedcmd[0]} not found!")
+        print(f"Command '{parsedcmd[0]}' not found!")
 
 if fread("INST.OS", "no") != "no":
-    if hashlib.md5(fread("USER.OS")).hexdigest():
-        instm = 1
+    if hashmd5(fread("USER.OS")) == fread("INST.OS"):
+        fwrite("INSM.OS", "1")
     else:
-        instm = 0
+        fwrite("INSM.OS", "0")
 else:
-    instm = -1
+    fwrite("INSM.OS", "-1")
+if int(fread("INSM.OS", "-1")) == -1:
+    print("Please install PyShell by using the 'install' command.")
+elif int(fread("INSM.OS", "-1")) == 0:
+    print("PyShell failed to verify you installed this software correctly.\nSome features may be limited or disabled.")
+else:
+    print(f"Welcome, {fread("USER.OS")}, to PyShell.")
+while True:
+    run_command(input("> "))
