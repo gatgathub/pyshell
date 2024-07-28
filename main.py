@@ -42,12 +42,17 @@ def run_command(command):
         if instm == 0:
             print("help\nver\nexit")
         else:
-            print("help\nver\nexit")
+            print("help\nver\nrun\nexit")
     elif instm > -1 and parsedcmd[0] == "ver":
         if instm == 0:
             print(f"PyShell {version[2]} ({version[1]})\nUsername: {fread("USER.OS")}\nFailed to verify.")
         else:
             print(f"PyShell {version[2]} ({version[1]})\nUsername: {fread("USER.OS")}\nVerification String: {fread("INST.OS")}")
+    elif instm == 1 and parsedcmd[0] == "run":
+        if len(parsedcmd) < 1:
+            print("run <app>")
+        else:
+            print(fread(f"{parsedcmd[1]}.psl", "App not found!"))
     else:
         print(f"Command '{parsedcmd[0]}' not found!")
 
