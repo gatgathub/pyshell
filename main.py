@@ -5,14 +5,14 @@ from file import *
 import hashlib
 instm = -1
 version = [
-    [1,0,2], # Internal Version
+    [1,0,3], # Internal Version
     "", # IV String
-    "Build 2", # Shown Version
+    "Build 3", # Shown Version
     True # Beta Tag
 ]
-version[1] = str(version[0])
+version[1] = str(version[0][0])
 for x_ in range(1, len(version[0])):
-    version[1] += f".{str(x_)}"
+    version[1] += f".{version[0][x_]}"
 
 def parse(commandi):
     out = []
@@ -58,6 +58,8 @@ if fread("INST.OS", "no") != "no":
         fwrite("INSM.OS", "0")
 else:
     fwrite("INSM.OS", "-1")
+if int(fread("INSM.OS")) == 1 and hashmd5(fread("main.py")) == fread("OGOS.OS"):
+    fwrite("INSM.OS", "0")
 if int(fread("INSM.OS", "-1")) == -1:
     print("Please install PyShell by using the 'install' command.")
 elif int(fread("INSM.OS", "-1")) == 0:
