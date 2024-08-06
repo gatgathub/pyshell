@@ -5,14 +5,14 @@ from file import *
 import hashlib
 instm = -1
 version = [
-    [1,0,2], # Internal Version
+    [1,0,3], # Internal Version
     "", # IV String
-    "Build 2", # Shown Version
+    "Build 3", # Shown Version
     True # Beta Tag
 ]
-version[1] = str(version[0])
+version[1] = str(version[0][0])
 for x_ in range(1, len(version[0])):
-    version[1] += f".{str(x_)}"
+    version[1] += f".{version[0][x_]}"
 
 def parse(commandi):
     out = []
@@ -42,17 +42,12 @@ def run_command(command):
         if instm == 0:
             print("help\nver\nexit")
         else:
-            print("help\nver\nrun\nexit")
+            print("help\nver\nexit")
     elif instm > -1 and parsedcmd[0] == "ver":
         if instm == 0:
             print(f"PyShell {version[2]} ({version[1]})\nUsername: {fread("USER.OS")}\nFailed to verify.")
         else:
-            print(f"PyShell {version[2]} ({version[1]})\nUsername: {fread("USER.OS")}\nVerification String: {fread("INST.OS")}")
-    elif instm == 1 and parsedcmd[0] == "run":
-        if len(parsedcmd) < 1:
-            print("run <app>")
-        else:
-            print(fread(f"{parsedcmd[1]}.psl", "App not found!"))
+            print(f"PyShell {version[2]} ({version[1]})\nUsername: {fread("USER.OS")}\nINST.OS: {fread("INST.OS")}\nOGOS.OS: {fread("OGOS.OS")}")
     else:
         print(f"Command '{parsedcmd[0]}' not found!")
 
@@ -63,6 +58,16 @@ if fread("INST.OS", "no") != "no":
         fwrite("INSM.OS", "0")
 else:
     fwrite("INSM.OS", "-1")
+if fread("OGOS.OS", "no") != "no":
+    if hashmd5(fread("OGOS.OS")) == fread("INST.OS"):
+        if int(fread("INSM.OS")) < 1:
+            fwrite("INSM.OS", "1")
+    else:
+        fwrite("INSM.OS", "0")
+else:
+    fwrite("INSM.OS", "-1")
+if int(fread("INSM.OS")) == 1 and hashmd5(fread("main.py")) == fread("OGOS.OS"):
+    fwrite("INSM.OS", "0")
 if int(fread("INSM.OS", "-1")) == -1:
     print("Please install PyShell by using the 'install' command.")
 elif int(fread("INSM.OS", "-1")) == 0:
